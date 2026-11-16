@@ -24,6 +24,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.util.Mth;
+import net.minecraft.util.Prediction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -201,7 +202,7 @@ public class ThrowingDiscEntity extends Entity implements ItemSupplier {
 			stack.shrink(1); // same stack object, so the hand ends up empty
 		}
 		LOCKED_UNTIL.put(player.getUUID(), now + THROW_LOCKOUT);
-		disc.play(SoundEvents.TRIDENT_THROW, center, tier.pitch, 0.8F);
+		disc.play(SoundEvents.TRIDENT_THROW.value(), center, tier.pitch, 0.8F);
 		return true;
 	}
 
@@ -423,7 +424,7 @@ public class ThrowingDiscEntity extends Entity implements ItemSupplier {
 		}
 		inv.add(item);
 		if (!item.isEmpty()) {
-			owner.drop(item, false);
+			owner.drop(item, false, Prediction.SERVER_ONLY);
 		}
 	}
 
@@ -464,7 +465,7 @@ public class ThrowingDiscEntity extends Entity implements ItemSupplier {
 		DamageSource source = level.damageSources().thrown(this, owner);
 		if (!target.hurtServer(level, source, (float) damage)) return;
 		double kb = 0.35 + 0.5 * knockback;
-		target.knockback(kb, -dirN.x, -dirN.z); // LivingEntity#knockback takes the direction to push *away from*
+		target.knockback(kb, -dirN.x, -dirN.z, source, (float) damage, false); // push *away from* the disc's path
 		if (fireAspect > 0) {
 			target.igniteForSeconds(4.0F * fireAspect);
 		}
@@ -647,3 +648,4 @@ public class ThrowingDiscEntity extends Entity implements ItemSupplier {
 		vel = Vec3.ZERO;
 	}
 }
+

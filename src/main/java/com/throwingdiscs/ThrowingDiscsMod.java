@@ -3,12 +3,13 @@ package com.throwingdiscs;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.loot.v3.LootTableEvents;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.core.Holder;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.NestedLootTable;
-import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
+import net.minecraft.world.level.storage.loot.providers.number.ints.ConstantValue;
 
 public class ThrowingDiscsMod implements ModInitializer {
 	public static final String MOD_ID = "tdisc";
@@ -32,10 +33,13 @@ public class ThrowingDiscsMod implements ModInitializer {
 		// loot tables (data/tdisc/loot_table/...), which hold the odds and the enchanting.
 		LootTableEvents.MODIFY.register((key, builder, source, registries) -> {
 			if (key.equals(VANILLA_RARE)) {
-				builder.withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1.0F)).add(NestedLootTable.lootTableReference(DISC_RARE)));
+				builder.withPool(LootPool.lootPool().setRolls(Holder.direct(new ConstantValue(1)))
+						.add(NestedLootTable.lootTableReference(registries.lookupOrThrow(Registries.LOOT_TABLE).getOrThrow(DISC_RARE))));
 			} else if (key.equals(VANILLA_OMINOUS_RARE)) {
-				builder.withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1.0F)).add(NestedLootTable.lootTableReference(DISC_OMINOUS_RARE)));
+				builder.withPool(LootPool.lootPool().setRolls(Holder.direct(new ConstantValue(1)))
+						.add(NestedLootTable.lootTableReference(registries.lookupOrThrow(Registries.LOOT_TABLE).getOrThrow(DISC_OMINOUS_RARE))));
 			}
 		});
 	}
 }
+

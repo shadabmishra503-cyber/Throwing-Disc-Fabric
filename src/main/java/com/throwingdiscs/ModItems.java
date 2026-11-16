@@ -3,14 +3,16 @@ package com.throwingdiscs;
 import java.util.EnumMap;
 import java.util.Map;
 
-import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
+import net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 
 public final class ModItems {
 	public static final Map<DiscTier, Item> DISCS = new EnumMap<>(DiscTier.class);
@@ -28,10 +30,11 @@ public final class ModItems {
 			DISCS.put(tier, Registry.register(BuiltInRegistries.ITEM, key, new ThrowingDiscItem(props, tier)));
 		}
 
-		ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.COMBAT).register(entries -> {
+		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.COMBAT).register(output -> {
 			for (DiscTier tier : DiscTier.values()) {
-				entries.accept(DISCS.get(tier));
+				output.accept(new ItemStack(DISCS.get(tier)), CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
 			}
 		});
 	}
 }
+
